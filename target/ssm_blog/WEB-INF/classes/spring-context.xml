@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		  http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/context 
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+          http://www.springframework.org/schema/mvc 
+          http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+          http://www.springframework.org/schema/tx 
+          http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+       <context:annotation-config/>
+       <!-- 控制所有业务逻辑 -->   
+       <context:component-scan base-package="com.along">
+       		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+       		<!--除了 控制器 不要  -->
+       </context:component-scan>
+       
+       <!--引用数据源文件  druid.properties-->
+       <context:property-placeholder location="classpath:global.properties"/>
+       <!-- 配置数据源 -->
+       <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+       		 <property name="url" value="${jdbc.url}"></property>
+       		 <property name="password" value="${jdbc.password}"></property>
+       		 <property name="username" value="${jdbc.username}"></property>
+       		 <property name="driverClassName" value="${jdbc.driver}"></property>
+       		 <property name="filters" value="${filters}"></property>
+       		 <property name="maxActive" value="${maxActive}"></property>
+       		 <property name="initialSize" value="${initialSize}"></property>
+       		 <property name="maxWait" value="${maxWait}"></property>
+       		 <property name="minIdle" value="${minIdle}"></property>
+       		 <property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis}"></property>
+       		 <property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis}"></property>
+       		 <property name="validationQuery" value="${validationQuery}"></property>
+       		 <property name="testWhileIdle" value="${testWhileIdle}"></property>
+       		 <property name="testOnBorrow" value="${testOnBorrow}"></property>
+       		 <property name="testOnReturn" value="${testOnReturn}"></property>
+       		 <property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements}"></property>
+       </bean>
+       
+       <!--事务管理器  -->
+       	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+       		<property name="dataSource" ref="dataSource"></property>
+       	</bean>
+       	
+       	<!--开启事务  tx-->
+       	
+       	<tx:annotation-driven transaction-manager="transactionManager"/>
+       		<!-- 配置 JSR303 Bean Validator 定义 -->
+		<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+       	<!--配置mybatis SqlSessionFactoryBean  -->
+       	
+       	
+       	<bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+       		<property name="dataSource" ref="dataSource"></property>
+       		
+       		<!--指定mybaitis配置文件位置  -->
+       		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+       		
+       		<!-- 指定mapper位置 -->
+       		<property name="mapperLocations" value="classpath:com/along/mapper/*.xml"></property> 
+       	</bean>
+       	
+       	<!-- 缓存配置 -->
+		<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+			<property name="configLocation" value="classpath:ehcache.xml" />
+		</bean>
+       	<!-- 扫描所有的mapper 接口 -->
+       	
+       	<!--  <mybatis-spring:scan base-package="com.zking.mapper"></mybaties>  -->
+       	
+       	<bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+       		<property name="basePackage" value="com.along.dao"></property>
+       	</bean> 
+ </beans>

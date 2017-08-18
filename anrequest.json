@@ -1,0 +1,11 @@
+{
+	"baseUrl":"",
+	"adminPath":"a",
+	"frontPath":"f",
+	"function_add":"add",
+	"function_update":"update",
+	"function_delete":"delete",
+	"function_query":"query",
+	"function_view":"view",
+	"entity_package":"com.along.entity"
+}
