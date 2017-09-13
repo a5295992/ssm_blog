@@ -142,6 +142,6 @@ public class Controllergenerate {
 				list.add(f.getName().replace(".java", ""));
 			}
 		}*/
-		return Arrays.asList("Menu");
+		return Arrays.asList("Log");
 	}
 }

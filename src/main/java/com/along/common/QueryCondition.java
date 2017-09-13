@@ -1,25 +1,16 @@
 package com.along.common;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.web.util.WebUtils;
 
 public class QueryCondition {
-	private HttpServletRequest request;
-	private HttpServletResponse response;
 
-	public QueryCondition(HttpServletRequest request,
-			HttpServletResponse response) {
-		
-		this.request =request;
-		this.response= response;
-	}
 
 	public static int pageCount(HttpServletRequest request2, String paramName,
 			int defalut) {
 		String pageCount = WebUtils.getCleanParam(request2, paramName);
-		return pageCount==null?10:Integer.parseInt(pageCount);
+		return pageCount==null?defalut:Integer.parseInt(pageCount);
 	}
 	
 	public static int pageNum(HttpServletRequest request2, String paramName,
@@ -38,6 +29,12 @@ public class QueryCondition {
 			String default_) {
 		String pageOrder = WebUtils.getCleanParam(request2, paramName);
 		return pageOrder==null?default_:pageOrder;
+	}
+	
+	public static String pageGroup(HttpServletRequest request2, String paramName,
+			String default_) {
+		String pageGroup = WebUtils.getCleanParam(request2, paramName);
+		return pageGroup==null?default_:pageGroup;
 	}
 	
 }

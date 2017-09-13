@@ -17,7 +17,7 @@
   </head>
   
   <body>
-     <h1>抱歉，系统内部错误，我们会尽快解决该错误.</h1>
+     <h1>抱歉，系统内部错误，我们会尽快解决该错误.</h1><a href="${headpath }/f/index"></a>
   </body>
   <script type="text/javascript">
   </script>

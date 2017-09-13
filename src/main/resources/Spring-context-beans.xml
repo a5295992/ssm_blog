@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		  http://www.springframework.org/schema/beans/spring-beans.xsd
+          http://www.springframework.org/schema/context 
+          http://www.springframework.org/schema/context/spring-context-4.0.xsd
+         ">
+     
+    <bean id="sys_log" class="com.along.entity.Log"></bean>      
+    
+   <!--  <bean id = "analyzer" class="org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer"></bean>
+    <bean id="config" class="org.apache.lucene.index.IndexWriterConfig" >
+    <constructor-arg ref="analyzer"></constructor-arg>
+    </bean>
+    <bean id="path" class="java.nio.file.Path" factory-bean="java.nio.file.Paths" factory-method="get">
+    	<constructor-arg>
+			<value>/index_temp</value>
+    	</constructor-arg>
+    </bean>
+    
+    <bean id="dir" class="org.apache.lucene.store.Directory" factory-bean="org.apache.lucene.store.FSDirectory" factory-method="open" 
+     scope="prototype">
+     	<constructor-arg ref="path"></constructor-arg>
+     </bean>
+     
+    <bean id= "indexWriter" class="org.apache.lucene.index.IndexWriter">
+    	<constructor-arg name="d" ref="dir"></constructor-arg>
+    	<constructor-arg name="config" ref="config"></constructor-arg>
+    </bean> -->
+   </beans>
+   
+   

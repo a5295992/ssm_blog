@@ -109,7 +109,15 @@
     <if test="distinct">
       distinct
     </if>
-    <include refid="Base_Column_List" />
+   <choose>
+    	<when test="queryClause != null">
+    		${queryClause}
+    	</when>
+    	
+    	<otherwise>
+    		 <include refid="Base_Column_List" />
+    	</otherwise>
+    </choose>
     from sys_role
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -125,7 +133,7 @@
       This element was generated on Mon Aug 14 13:12:44 CST 2017.
     -->
     select 
-    <include refid="Base_Column_List" />
+   <include refid="Base_Column_List" />
     from sys_role
     where id = #{id,jdbcType=VARCHAR}
   </select>

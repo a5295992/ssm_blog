@@ -2,6 +2,12 @@ package com.along.entity;
 
 public class Example<T> {
 	
+	protected String groupByClause;
+
+	//查询字段 按  ,隔开
+	protected String queryClause;
+	
+	
 	protected String limit;
 
 	private String orderByClause;
@@ -41,6 +47,21 @@ public class Example<T> {
 
 	public void setLimit(String limit) {
 		this.limit = limit;
+	}
+
+	public String getQueryClause() {
+		return queryClause;
+	}
+
+	public void setQueryClause(String queryClause) {
+		this.queryClause = queryClause;
+	}
+	public String getGroupByClause() {
+		return groupByClause;
+	}
+
+	public void setGroupByClause(String groupByClause) {
+		this.groupByClause = groupByClause;
 	}
 	
 }

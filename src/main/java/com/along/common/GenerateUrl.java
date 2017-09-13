@@ -40,15 +40,18 @@ public class GenerateUrl {
 	private static String entity_package= null;
 	private static Map<String,String> config= null;
 	public static void main(String[] args) throws Exception {
-		//init();
-		//list.add("Menu");
-		//list.add("User");
-		//list.add("Role");
-		//list.add("UrlEntity");
-		//generateJava();
-		//generateJS();
+		/*init();
+		list.add("Menu");
+		list.add("User");
+		list.add("Role");
+		list.add("UrlEntity");
+		list.add("Log");
+		generateJava();
+		generateJS();*/
 //		/readClassNameToarray("com.along.entity");
-		//createEntityAndMapper();
+		//
+		
+		createEntityAndMapper();
 	}
 
 	private static void generateJS() throws IOException {

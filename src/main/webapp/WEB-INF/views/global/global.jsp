@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!--jstl 函数  -->
 <%@ taglib prefix="fn"  uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="func"  uri="http://java.sun.com/jsp/func/functions"%>
 <!--安全验证标签  -->
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -31,6 +32,5 @@
 	var statics="${statics}";   /*  全局静态文件访问地址 */
 	var statics_views_modules ="${statics_views_modules}";
 </script>
-<script type="text/javascript" src="${headpath }/statics/global/global.js"></script>
 
 

@@ -38,7 +38,7 @@
 				<c:forEach items="${menuList }" var="menu">
 					<div title="${menu.name }" style="padding:10px;">
 					<c:forEach items="${menu.children }" var="menu_childern">
-						<a href="#" class="easyui-linkbutton" plain="true" iconCls="icon-search"
+						<a href="#" class="easyui-linkbutton" plain="true" iconCls="${iconcls }"
 	                	onclick="addTab('${menu_childern.name}','${headpath}${menu_childern.href}')"> ${menu_childern.name}</a><br>
 					</c:forEach>
                 	</div>

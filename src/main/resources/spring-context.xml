@@ -4,6 +4,9 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans 
 		  http://www.springframework.org/schema/beans/spring-beans.xsd
           http://www.springframework.org/schema/context 
@@ -11,8 +14,18 @@
           http://www.springframework.org/schema/mvc 
           http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
           http://www.springframework.org/schema/tx 
-          http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+          http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+          http://www.springframework.org/schema/aop 
+          http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+          http://www.springframework.org/schema/util 
+          http://www.springframework.org/schema/util/spring-util-4.0.xsd
+          http://www.springframework.org/schema/task 
+          http://www.springframework.org/schema/task/spring-task-4.0.xsd
+          ">
+          
        <context:annotation-config/>
+       <!-- aop -->
+       <aop:aspectj-autoproxy ></aop:aspectj-autoproxy>
        <!-- 控制所有业务逻辑 -->   
        <context:component-scan base-package="com.along">
        		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
@@ -21,6 +34,15 @@
        
        <!--引用数据源文件  druid.properties-->
        <context:property-placeholder location="classpath:global.properties"/>
+       
+       <!-- 加载应用属性实例，可通过  @Value("#{APP_PROP['jdbc.driver']}") String jdbcDriver 方式引用 -->
+    	<util:properties id="APP_PROP" location="classpath:global.properties" local-override="true"/>
+    	
+    	
+    	<!-- 计划任务配置，用 @Service @Lazy(false)标注类，用@Scheduled(cron = "0 0 2 * * ?")标注方法 -->
+	    <task:executor id="executor" pool-size="10"/> <task:scheduler id="scheduler" pool-size="10"/>
+	    <task:annotation-driven scheduler="scheduler" executor="executor" proxy-target-class="true"/>
+	    
        <!-- 配置数据源 -->
        <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
        		 <property name="url" value="${jdbc.url}"></property>
@@ -74,5 +96,5 @@
        	
        	<bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
        		<property name="basePackage" value="com.along.dao"></property>
-       	</bean> 
+       	</bean>
  </beans>

@@ -15,9 +15,9 @@ public class DataEntity<T> implements Serializable {
 	
 
 	private String id;
-	
+	private String createBy;
+	private String updateBy;
 	private Date createDate;
-	
 	private Date updateDate;
 	
 	private String delFlag;
@@ -57,6 +57,18 @@ public class DataEntity<T> implements Serializable {
 	}
 	public void setChildren(List<T> children) {
 		this.children = children;
+	}
+	public String getCreateBy() {
+		return createBy;
+	}
+	public void setCreateBy(String createBy) {
+		this.createBy = createBy;
+	}
+	public String getUpdateBy() {
+		return updateBy;
+	}
+	public void setUpdateBy(String updateBy) {
+		this.updateBy = updateBy;
 	}
 	
 	

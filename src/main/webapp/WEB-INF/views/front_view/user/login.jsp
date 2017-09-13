@@ -29,8 +29,7 @@
 		<form id="login_form" method="POST" action="${headpath }/f/user/query?method=login">
 			<ul style="text-align: center;">
 				<li style="font-size: 48px">随心博客管理</li>
-
-				<li><input class="name" name="loginName" placeholder="请输入用户名"></li>
+				<li><input class="name" name="loginName" placeholder="请输入用户名" value="${user.loginName }"></li>
 				
 				<li><input type="password" name="password" class="pwd" placeholder="请输入密码"></li>
 				<li id="verifyCode" style="display: block;">
@@ -42,7 +41,10 @@
 					</span> 
 					<span id="changeimg"> 换一张 </span></li>
 				<li><input id="login" value="立即登录" type="button"></li>
-				<li><span id="err" style="display: inline-block;"></span></li>
+				<c:forEach items="${result.failMessage }" var="fail">
+					<li><span id="err" style="display: inline-block;">${fail }</span></li>
+				</c:forEach>
+				<li><span id="err" style="display: inline-block;">${result.successMessage}</span></li>
 			</ul>
 		</form>
 	</div>
@@ -52,4 +54,6 @@
 	</div>
 	<div id="cloud"></div>
   </body>
+  <script type="text/javascript">
+  </script>
 </html>

@@ -42,6 +42,6 @@
 	<!-- <table  schema="DB2ADMIN" tableName="sys_user" domainObjectName="User">	
 	</table > -->
 	<!-- 角色表 -->
-	<table tableName="sys_menu" domainObjectName="Menu"></table>
+	<table tableName="sys_url" domainObjectName="UrlEntity"></table>
   </context>
 </generatorConfiguration>

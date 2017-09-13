@@ -35,6 +35,15 @@ var A_URLENTITY_DELETE="/a/urlentity/delete";
 var A_URLENTITY_DELETE_VIEW="/a/urlentity/delete/view";
 var A_URLENTITY_QUERY="/a/urlentity/query";
 var A_URLENTITY_QUERY_VIEW="/a/urlentity/query/view";
+	//*Log---start--------*/
+var A_LOG_ADD="/a/log/add";
+var A_LOG_ADD_VIEW="/a/log/add/view";
+var A_LOG_UPDATE="/a/log/update";
+var A_LOG_UPDATE_VIEW="/a/log/update/view";
+var A_LOG_DELETE="/a/log/delete";
+var A_LOG_DELETE_VIEW="/a/log/delete/view";
+var A_LOG_QUERY="/a/log/query";
+var A_LOG_QUERY_VIEW="/a/log/query/view";
 
 
 	//*Menu---start--------*/
@@ -73,3 +82,12 @@ var F_URLENTITY_DELETE="/f/urlentity/delete";
 var F_URLENTITY_DELETE_VIEW="/f/urlentity/delete/view";
 var F_URLENTITY_QUERY="/f/urlentity/query";
 var F_URLENTITY_QUERY_VIEW="/f/urlentity/query/view";
+	//*Log---start--------*/
+var F_LOG_ADD="/f/log/add";
+var F_LOG_ADD_VIEW="/f/log/add/view";
+var F_LOG_UPDATE="/f/log/update";
+var F_LOG_UPDATE_VIEW="/f/log/update/view";
+var F_LOG_DELETE="/f/log/delete";
+var F_LOG_DELETE_VIEW="/f/log/delete/view";
+var F_LOG_QUERY="/f/log/query";
+var F_LOG_QUERY_VIEW="/f/log/query/view";

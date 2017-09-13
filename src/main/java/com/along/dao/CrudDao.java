@@ -97,11 +97,4 @@ public interface CrudDao<T,D extends Example<D>> {
      */
     int updateByPrimaryKey(T record);
     
-    
-    /**
-     * 获取 子集
-     * @param pid
-     * @return
-     */
-    List<T> selectChildren(String pid);
 }

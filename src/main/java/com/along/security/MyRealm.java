@@ -17,6 +17,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.along.entity.Role;
 import com.along.entity.User;
 import com.along.entity.UserExample;
 import com.along.serviceImpl.UserServiceImpl;
@@ -35,10 +36,10 @@ public class MyRealm extends AuthorizingRealm {
 		ShiroUser user = (ShiroUser) principals.getPrimaryPrincipal();
 		log.info("身份验证: 当前登录用户["+user.getLoginName());
 		Set<String> roles = new HashSet<String>();
-		roles.add(user.getRoleName());
+		roles.add(user.getRole().getName());
 		// 根据 用户名获取所有角色
-		SimpleAuthorizationInfo infor = new SimpleAuthorizationInfo(roles);
-		log.info("身份验证: 当前登录用户身份["+user.getRoleName());
+		SimpleAuthorizationInfo infor = new SimpleAuthorizationInfo();
+		log.info("身份验证: 当前登录用户身份["+user.getRole().getName());
 		return infor;
 	}
 
@@ -63,8 +64,8 @@ public class MyRealm extends AuthorizingRealm {
 			String photo = userFormData.getPhoto();
 			String loginIp = token.getHost();
 			Date loginDate = userFormData.getLoginDate();
-			String roleName = userFormData.getRole().getName();
-			ShiroUser shiroUser = new ShiroUser(userId, loginName, photo, loginIp, loginDate, roleName);
+			Role roleName = userFormData.getRole();
+			ShiroUser shiroUser = new ShiroUser(userId, loginName, photo, loginIp, loginDate, roleName,password);
 			simple = new SimpleAuthenticationInfo(shiroUser,password,getName() );
 		}
 		return simple;

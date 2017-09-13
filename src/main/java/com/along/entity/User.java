@@ -56,8 +56,6 @@ public class User  extends DataEntity<User>{
      *
      * @mbg.generated Mon Aug 14 13:12:44 CST 2017
      */
-    @NotEmpty(message="密码不能为空")
-    @Length(min=5,max=20,message="请输入长度为5和20之间的字符或数字组合")
     private String password;
 
     /**

@@ -1,5 +1,8 @@
 package com.along.controller;
 
+import java.util.Arrays;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,8 +15,11 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 
+import com.along.common.AjaxResult;
 import com.along.common.CacheUtil;
+import com.along.common.DateUtil;
 import com.along.common.MD5Encode;
 import com.along.entity.LogFlag;
 import com.along.entity.User;
@@ -22,108 +28,131 @@ import com.along.security.ShiroUser;
 import com.along.serviceImpl.UserServiceImpl;
 
 @Component
-public class LoginController {
+public class LoginController extends BaseController {
 	@Autowired
 	private UserServiceImpl userService;
-	private static Logger log = Logger.getLogger(UserController.class);
-	public String login(HttpServletRequest request,HttpServletResponse response) {
-		//获取 请参数
-		String userName_p      = "loginName";
-		String password_p      = "password";
+	private static Logger log = Logger.getLogger(LoginController.class);
+
+	public AjaxResult login(HttpServletRequest request,
+			HttpServletResponse response, Model model) {
+		// 获取 请参数
+		String userName_p = "loginName";
+		String password_p = "password";
 		String validateImage_p = "validateImage";
-		
-		String userName        = WebUtils.getCleanParam(request, userName_p );//用户名 loginName
-		String password        = WebUtils.getCleanParam(request, password_p ); //密码
-		String validateImage   = WebUtils.getCleanParam(request, validateImage_p );//验证码
-		String validateImageFromSession = (String) request.getSession().getAttribute("validateImage");//本地验证码
-		/*log.info("1:"+userName);
-		log.info("2:"+password);
-		log.info("3:"+validateImage);
-		log.info("4:"+validateImageFromSession);*/
+
+		String userName = WebUtils.getCleanParam(request, userName_p);// 用户名
+																		// loginName
+		String password = WebUtils.getCleanParam(request, password_p); // 密码
+		String validateImage = WebUtils.getCleanParam(request, validateImage_p);// 验证码
+		String validateImageFromSession = (String) request.getSession()
+				.getAttribute("validateImage");// 本地验证码
+
+		model.addAttribute("loginName", userName);
+		AjaxResult ajaxResult = new AjaxResult();
+
+		/*
+		 * log.info("1:"+userName); log.info("2:"+password);
+		 * log.info("3:"+validateImage);
+		 * log.info("4:"+validateImageFromSession);
+		 */
 		User userFromDataBase = null;
 		String host = request.getLocalAddr();
-		if(validateImage!= null&&validateImageFromSession!=null&&validateImage.equalsIgnoreCase(validateImageFromSession)){
-			request.getSession().removeAttribute("validateImage");//移除session
-			if(userName!=null&&password!=null){
-				UserExample f =new UserExample();
-				f .createCriteria().andLoginNameEqualTo(userName);
-				userFromDataBase = userService.getSinge(f );
-				boolean isUse = isUselly(userName,userFromDataBase);//用户是否可用
-				if(isUse){
+		if (validateImage != null && validateImageFromSession != null
+				&& validateImage.equalsIgnoreCase(validateImageFromSession)) {
+			request.getSession().removeAttribute("validateImage");// 移除session
+			if (userName != null && password != null) {
+				UserExample f = new UserExample();
+				f.createCriteria().andLoginNameEqualTo(userName);
+				userFromDataBase = userService.getSinge(f);
+				boolean isUse = isUselly(userName, userFromDataBase);// 用户是否可用
+				if (isUse) {
 					Subject subject = SecurityUtils.getSubject();
-					AuthenticationToken token = new UsernamePasswordToken(userName,MD5Encode.encode(password),host);
+					AuthenticationToken token = new UsernamePasswordToken(
+							userName, MD5Encode.encode(password), host);
 					try {
-						subject.login(token );
+						subject.login(token);
 					} catch (AuthenticationException e) {
 						log.error(e);
-						return "2:用户名或密码错误";
+						ajaxResult.setFailMessage(Arrays.asList("用户名或密码错误"));
+						return ajaxResult;
 					}
-				}else {
-					return "2:用户不存在或已被限制";
+				} else {
+					ajaxResult.setFailMessage(Arrays.asList("用户不存在或已被限制"));
+					return ajaxResult;
 				}
-			}else {
-				return "2:用户名或密码不能为空";
+			} else {
+				ajaxResult.setFailMessage(Arrays.asList("用户名密码不能为空"));
+				return ajaxResult;
 			}
-		}else {
-			return "2:验证码不正确";
+		} else {
+			ajaxResult.setFailMessage(Arrays.asList("验证码不正确"));
+			return ajaxResult;
 		}
 		userFromDataBase.setLoginIp(host);
+		Date loginDate = DateUtil.toSqlDate();
+		userFromDataBase.setLoginDate(loginDate);
 		userService.update(userFromDataBase);
-		return "0:登录成功";
+		ajaxResult.setSuccessMessage("登录成功");
+		return ajaxResult;
 	}
-	
-	private boolean isUselly(String userName,User userFromDataBase) {
-		
-		if(userFromDataBase==null){
+
+	private boolean isUselly(String userName, User userFromDataBase) {
+
+		if (userFromDataBase == null) {
 			return false;
-		}else{
+		} else {
 			return LogFlag.INUSE.equals(userFromDataBase.getLoginFlag());
 		}
-		
+
 	}
-	
+
 	/**
 	 * 用户注册
+	 * 
 	 * @param request
 	 * @param response
 	 * @param user
 	 * @return
 	 */
-	public String regist(HttpServletRequest request,HttpServletResponse response,User user){
-		String default_result = "0:[user]"+user.getLoginName()+"regist success";
-		//保存
-		UserExample f =new UserExample();
-		f .createCriteria().andLoginNameEqualTo(user.getLoginName());
-		User userFromDataBase = userService.getSinge(f );
-		if(userFromDataBase==null){
+	public AjaxResult regist(HttpServletRequest request,
+			HttpServletResponse response, User user) {
+		// 保存
+		AjaxResult ajaxResult = new AjaxResult();
+
+		UserExample f = new UserExample();
+		f.createCriteria().andLoginNameEqualTo(user.getLoginName());
+		User userFromDataBase = userService.getSinge(f);
+		if (userFromDataBase == null) {
 			user.setPassword(MD5Encode.encode(user.getPassword()));
-			try {
-				userService.add(user);
-			} catch (Exception e) {
-				default_result = "2:"+e.getCause().getMessage().substring(0, 10);
-				log.error(e);
-			}
-		}else{
-			return "2:登录名重复";
+			user.setUserType("0000");// 默认角色
+			userService.add(user);
+		} else {
+			ajaxResult.setFailMessage(Arrays.asList("用户名已经存在"));
+			;
 		}
-		return default_result;
+
+		return ajaxResult;
 	}
+
 	/**
 	 * 登出
+	 * 
 	 * @param request
 	 * @param response
 	 * @return
 	 */
-	public String logout(HttpServletRequest request,HttpServletResponse response) {
+	public AjaxResult logout(HttpServletRequest request,
+			HttpServletResponse response) {
+		AjaxResult ajaxResult = new AjaxResult();
 		Subject subject = SecurityUtils.getSubject();
 		ShiroUser shiroUser = (ShiroUser) subject.getPrincipal();
-		if(shiroUser != null ){
-			CacheUtil.remove("userCache","currentUser",shiroUser);
+		if (shiroUser != null) {
+			CacheUtil.remove("userCache", "currentUser", shiroUser);
 			subject.logout();
-		}else {
-			return "2:用户已退出或未登录";
+		} else {
+			ajaxResult.setFailMessage(Arrays.asList("当前用户未登录或已经退出"));
 		}
-				
-		return "0:"+shiroUser .getLoginName()+"[登出成功]";
+		ajaxResult.setSuccessMessage("退出成功");
+		return ajaxResult;
 	}
 }

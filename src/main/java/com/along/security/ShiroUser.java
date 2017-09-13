@@ -2,6 +2,8 @@ package com.along.security;
 
 import java.util.Date;
 
+import com.along.entity.Role;
+
 public class ShiroUser {
 	
 	private String userId;
@@ -9,7 +11,8 @@ public class ShiroUser {
 	private String photo;
 	private String loginIp;
 	private Date   loginDate;
-	private String roleName;
+	private Role   role;
+	private String password;
 	public String getUserId() {
 		return userId;
 	}
@@ -40,25 +43,31 @@ public class ShiroUser {
 	public void setLoginDate(Date loginDate) {
 		this.loginDate = loginDate;
 	}
-	public String getRoleName() {
-		return roleName;
+	public Role getRole() {
+		return role;
 	}
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 	public ShiroUser(String userId, String loginName, String photo,
-			String loginIp, Date loginDate, String roleName) {
+			String loginIp, Date loginDate, Role role,String password) {
 		super();
 		this.userId = userId;
 		this.loginName = loginName;
 		this.photo = photo;
 		this.loginIp = loginIp;
 		this.loginDate = loginDate;
-		this.roleName = roleName;
+		this.role = role;
+		this.password = password;
 	}
 	public ShiroUser() {
 		super();
 	}
-	
+	public String getPassword() {
+		return this.password;
+	}
+	public void setPassword(String password){
+		this.password=password;
+	}
 	
 }

@@ -5,8 +5,13 @@ import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,10 +24,10 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.log4j.Logger;
 import org.apache.shiro.authc.AuthenticationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.WebDataBinder;
@@ -30,7 +35,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.along.common.BeanAndMapConvert;
 import com.along.common.QueryCondition;
+import com.along.common.ResultBase;
+import com.along.entity.DataEntity;
 import com.along.entity.Example;
 
 /**
@@ -38,7 +46,7 @@ import com.along.entity.Example;
  * @author ThinkGem
  * @version 2013-3-23
  */
-public abstract class BaseController  extends LoginController{
+public abstract class BaseController {
 	protected String success = "0:";//成功
 	protected String fault 	 = "1:";//失败
 	protected String other   = "3:";//其他
@@ -46,31 +54,55 @@ public abstract class BaseController  extends LoginController{
 	/**
 	 * 日志对象
 	 */
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected Logger logger = Logger.getLogger(BaseController.class);
 	
 	protected String pageCount;
 	protected String rows;
 	protected String sort;
 	protected String order;
 	
+	@Value("#{APP_PROP['jdbc.driver']}")
+	protected String adminPath;
 	
 	protected <F  extends Example<F>> Example<F> getExample(HttpServletRequest request,F f){
 		
 		int pageCount = QueryCondition.pageCount(request,"rows",10);
 		int pageNum = QueryCondition.pageNum(request,"page",0);
-		logger.info("当前分页大小: "+pageCount);
-		logger.info("当前页面: "+pageNum);
 		String sort = QueryCondition.pageSort(request,"sort","id");
-		String order = QueryCondition.pageOrder(request,"order","desc");
-		logger.info("当前排序字段: "+sort);
-		logger.info("当前排序方式: "+order);
+		sort = toCamalString(sort);
 		
+		String order = QueryCondition.pageOrder(request,"order","desc");
+		
+		String groupBy  = QueryCondition.pageGroup(request,"group","id");
+		groupBy = toCamalString(groupBy);
 		
 		f.setPageCount(pageCount);
 		f.setPageNum(pageNum);
+		f.setGroupByClause(groupBy);
 		f.setOrderByClause(sort+" "+order);
 		return f;
 	}
+	
+	private String  toCamalString(String sort){
+		StringBuilder sb = new StringBuilder();
+		for (char sc : sort.toCharArray()) {
+			if((sc+"").hashCode()>64&&(sc+"").hashCode()<91){
+				sb.append("_"+(sc+"").toLowerCase());
+			}else{
+				sb.append(sc);
+			}
+		}
+		return sb.toString();
+	}
+	/**
+	 * 客户端返回jsons数据 用于 ajax数返回
+	 * @return
+	 */
+	protected String toJSONString(Object object){
+		
+		return JSONObject.fromObject(object).toString();
+	}
+	
 	@Autowired
 	protected Validator validator;
 
@@ -200,7 +232,7 @@ public abstract class BaseController  extends LoginController{
 			@SuppressWarnings("deprecation")
 			@Override
 			public void setAsText(String text) {
-				System.out.println(text+"-----------------------text-----");
+				logger.info("text:  "+text);
 				setValue(text == null ? null : StringEscapeUtils.escapeHtml4(text.trim()));
 			}
 			@Override
@@ -242,5 +274,68 @@ public abstract class BaseController  extends LoginController{
 		OutputStream os = response.getOutputStream();
 		vCode.write(os);
 		os.close();
+	}
+	
+	/**
+	 * 
+	 * @param <T>
+	 * @param <A>
+	 * @param list  定义为要验证的数据集合
+	 * @param ajaxResult  返回结果集对象
+	 * @return 数据验证个数大于0的情况下 返回为true :否则返回为false
+	 */
+	protected <T extends DataEntity<T>, A extends ResultBase> boolean beanValidatorss(List<T> list, A a,Class<?>... groups) {
+		Integer failCount = 0;
+		List<T> listValidateSuccess = new ArrayList<T>();
+		Set <String> failSet = new HashSet<String>();
+		for (T t : list) {
+			try{
+				BeanValidators.validateWithException(validator, t, groups);
+				listValidateSuccess.add(t);//没有异常的数据 我们再添加到  验证成功的数据集合中
+			}catch(ConstraintViolationException ex){
+				failCount++;
+				List<String> failMessage = BeanValidators.extractPropertyAndMessageAsList(ex, ": ");
+				failMessage.add(0, "数据验证失败");
+				failSet.addAll(failMessage);
+			}
+		}
+		a.setFailMessage(new ArrayList<String>(failSet));//添加错误信息到 
+		a.setFailCount(failCount);
+		list.clear();//把以前的这个数据清空 
+		list.addAll(listValidateSuccess);// 重新赋值
+		
+		return list.size()>0?true:false;//当验证数据 大于0  ...
+	}
+	
+	
+	/**
+	 * 描述:根据 前台传入的json字符串 (包含 实体信息的数据) 转换为实体的结果集List形式
+	 * 前台数据的要求是: json={json1:{entity},json2:{entity}}
+	 * @param jsonBeans 从 http 请求发送过来的json字符串 包含对象的信息 
+	 * @param clazz      实体的class
+	 * @return  为实体的结果集List形式
+	 */
+	protected  <T> List<T>getBeanListFormJsonString(String jsonBeans,Class<T> clazz) {
+		
+		@SuppressWarnings("unchecked")
+		Map<String,Object> urlEntityss = JSONObject.fromObject(jsonBeans);
+		List<T> list = new ArrayList<T>();
+		for (Entry<String, Object> urlEntity : urlEntityss.entrySet()) {
+			T bean;
+			try {
+				bean = clazz.newInstance();
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = JSONObject.fromObject(urlEntity.getValue());
+				BeanAndMapConvert.MapToBean(bean, map);
+				list.add(bean);
+			} catch (InstantiationException e) {
+				logger.error("不能实例化对象"+e);
+			} catch (IllegalAccessException e) {
+				logger.error("不能实例化对象"+e);
+			} catch (Exception e) {
+				logger.error("子集无法转化为JSON 确认该字符串是否有双重子集"+e);
+			}
+		}
+		return list;
 	}
 }

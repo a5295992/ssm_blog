@@ -24,4 +24,34 @@ public class DateUtil {
 	    java.sql.Date dateTime = new java.sql.Date(timeDate.getTime());//sql类型
 	return dateTime;
  }
+
+public static java.util.Date toUtilDate() {
+	 DateFormat dateFormat;
+	    dateFormat = new SimpleDateFormat(DATE_PATTERN, Locale.ENGLISH);
+	    String par = dateFormat.format(new java.util.Date());
+	    java.util.Date timeDate = null;
+		try {
+			timeDate = dateFormat.parse(par);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}//util类型
+	    java.util.Date dateTime = new java.util.Date(timeDate.getTime());//sql类型
+	return dateTime;
+}
+
+public static java.util.Date toSqlDate(String createDate) {
+	DateFormat dateFormat;
+    dateFormat = new SimpleDateFormat(DATE_PATTERN, Locale.ENGLISH);
+    String par = dateFormat.format(createDate);
+    dateFormat.setLenient(false);
+    java.util.Date timeDate = null;
+	try {
+		timeDate = dateFormat.parse(par);
+	} catch (ParseException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}//util类型
+    java.sql.Date dateTime = new java.sql.Date(timeDate.getTime());//sql类型
+    return dateTime;
+}
 }
